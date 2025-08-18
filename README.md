@@ -8,6 +8,18 @@ A Windows system tray application that continuously monitors the connection to D
 
 Perfect for retail environments using Datecs fiscal printers and cash registers to ensure continuous connectivity monitoring.
 
+## 🚀 Quick Start
+
+**For Windows users (Easiest method):**
+1. [Download the latest release](https://github.com/bulgariamitko/datecs-cash-register-monitor/releases)
+2. Extract the ZIP file
+3. **Double-click `install_and_run.bat`**
+4. The app will install dependencies and start in your system tray!
+
+**For executable version:**
+1. **Double-click `build_windows_exe.bat`** to create `DatecsCashRegisterMonitor.exe`
+2. Run the `.exe` file - no Python installation needed!
+
 ## 🏪 Datecs Compatibility
 
 This application is specifically designed for Datecs cash registers and fiscal printers, including:
@@ -68,19 +80,24 @@ This application is specifically designed for Datecs cash registers and fiscal p
    python cash_register_monitor/main.py
    ```
 
-### Option 2: Build Executable
+### Option 2: Quick Install & Run (Windows)
 
-1. **Install build dependencies**:
-   ```bash
-   pip install pyinstaller
+1. **Download and extract** the repository
+2. **Double-click** `install_and_run.bat`
+   - Automatically installs dependencies
+   - Starts the monitor in system tray
+   - No command window stays open
+
+### Option 3: Build Windows Executable
+
+1. **Double-click** `build_windows_exe.bat`
+   - Automatically installs PyInstaller
+   - Builds `DatecsCashRegisterMonitor.exe` 
+   - Creates a single-file executable
+
+2. **Run the executable**:
    ```
-2. **Run the build script**:
-   ```bash
-   python build_executable.py
-   ```
-3. **Run the executable**:
-   ```
-   dist/CashRegisterMonitor.exe
+   dist/DatecsCashRegisterMonitor.exe
    ```
 
 ## Usage

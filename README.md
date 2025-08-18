@@ -100,6 +100,16 @@ This application is specifically designed for Datecs cash registers and fiscal p
    dist/DatecsCashRegisterMonitor.exe
    ```
 
+## 📁 Batch Files Reference
+
+| File | Purpose | Use Case |
+|------|---------|----------|
+| `install_and_run.bat` | One-click install & start | **Recommended for first-time users** |
+| `build_windows_exe.bat` | Create standalone executable | **Best for distribution** |
+| `run_datecs_monitor.bat` | Smart launcher | **Works with any version** |
+| `start_silent.bat` | Silent background startup | **For scheduled/automated runs** |
+| `start_monitor.bat` | Background with confirmation | **Manual startup with feedback** |
+
 ## Usage
 
 ### Starting the Application
@@ -269,6 +279,10 @@ The application follows a modular architecture:
 
 4. **Build executable**:
    ```bash
+   # For Windows (recommended)
+   build_windows_exe.bat
+   
+   # Or manually with Python
    python build_executable.py
    ```
 
@@ -284,10 +298,18 @@ For support and bug reports, please:
 
 ## Version History
 
-### v1.0.0
-- Initial release
-- TCP connection monitoring
-- System tray integration
-- Windows startup support
-- Settings management with GUI
-- Icon-based status indicators
+### v1.1.0 - Easy Windows Installation
+- **One-Click Installation**: `install_and_run.bat` for automatic setup
+- **Executable Builder**: `build_windows_exe.bat` creates standalone .exe
+- **Smart Launcher**: `run_datecs_monitor.bat` works with any version
+- **Background Execution**: No command windows stay open
+- **Enhanced Documentation**: Clear installation and usage instructions
+- **Professional Packaging**: Ready for end-user deployment
+
+### v1.0.0 - Initial Release
+- TCP connection monitoring for Datecs devices
+- System tray integration with colored status indicators
+- Windows startup support with registry integration
+- Settings management GUI with connection testing
+- JSON configuration file storage
+- Icon-based visual feedback system

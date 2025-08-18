@@ -261,9 +261,9 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ## Support
 
-For support and bug reports, please contact:
-- **Email**: support@nimasolutions.com
+For support and bug reports, please:
 - **Issues**: Create an issue in the project repository
+- **Discussions**: Use GitHub Discussions for questions and community help
 
 ## Version History
 

@@ -3,29 +3,110 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![Windows](https://img.shields.io/badge/platform-Windows-blue.svg)](https://www.microsoft.com/windows)
+[![macOS](https://img.shields.io/badge/platform-macOS-lightgrey.svg)](https://www.apple.com/macos)
 
-A Windows system tray application that continuously monitors the connection to Datecs cash registers and provides real-time visual feedback through colored tray icons.
+A cross-platform application that continuously monitors the connection to Datecs cash registers and provides real-time visual feedback through system tray/menu bar icons.
 
 Perfect for retail environments using Datecs fiscal printers and cash registers to ensure continuous connectivity monitoring.
 
-## 🚀 Quick Start
+## 📁 Project Structure
 
-**For Windows users (Easiest method):**
+```
+datecs-cash-register-monitor/
+├── mac/                    # macOS application
+│   ├── unified_monitor.py  # Menu bar app using rumps
+│   ├── FPrintMonitor.spec  # PyInstaller spec for macOS
+│   └── requirements.txt    # macOS dependencies
+├── win/                    # Windows application
+│   ├── cash_register_monitor/  # Main application package
+│   ├── build_executable.py     # Build script
+│   ├── build_windows_exe.bat   # One-click build
+│   ├── install_and_run.bat     # Quick install & run
+│   └── ...                     # Other Windows files
+├── README.md
+├── LICENSE
+└── requirements.txt        # Shared requirements
+```
+
+---
+
+## 🍎 macOS Installation
+
+### Requirements
+- macOS 10.14+
+- Python 3.8+
+- Wine (for running FPrint.exe)
+
+### Quick Start
+
+1. **Install dependencies**:
+   ```bash
+   cd mac
+   pip3 install -r requirements.txt
+   brew install wine-stable  # If running FPrint.exe
+   ```
+
+2. **Run the monitor**:
+   ```bash
+   python3 unified_monitor.py
+   ```
+
+3. **Configure** via menu bar icon → Settings:
+   - Set your printer IP and port
+
+### macOS Features
+
+- 🖨️ **Printer icon**: Both FPrint and printer connected
+- 🟡 **Yellow icon**: One system running (partial connection)
+- 🔴 **Red icon**: Both systems down
+
+### Menu Options
+- **Start FPrint**: Launch FPrint.exe via Wine
+- **Restart FPrint**: Kill and restart FPrint
+- **Settings**: Configure printer IP:port
+- **Quit All**: Stop FPrint and exit monitor
+
+---
+
+## 🪟 Windows Installation
+
+### Quick Start (Easiest)
+
 1. [Download the latest release](https://github.com/bulgariamitko/datecs-cash-register-monitor/releases)
 2. Extract the ZIP file
-3. **Double-click `install_and_run.bat`**
-4. The app will install dependencies and start in your system tray!
+3. Navigate to the `win/` folder
+4. **Double-click `install_and_run.bat`**
+5. The app will install dependencies and start in your system tray!
 
-**For executable version:**
-1. **Double-click `build_windows_exe.bat`** to create `DatecsCashRegisterMonitor.exe`
-2. Run the `.exe` file - no Python installation needed!
+### Build Executable
+
+1. Navigate to `win/` folder
+2. **Double-click `build_windows_exe.bat`** to create `DatecsCashRegisterMonitor.exe`
+3. Run the `.exe` file - no Python installation needed!
+
+### Windows Features
+
+- 🟢 **Green icon**: Connected to cash register
+- 🔴 **Red icon**: Disconnected from cash register
+- 🟡 **Yellow icon**: Checking connection status
+
+### Windows Batch Files
+
+| File | Purpose |
+|------|---------|
+| `install_and_run.bat` | One-click install & start |
+| `build_windows_exe.bat` | Create standalone executable |
+| `run_datecs_monitor.bat` | Smart launcher |
+| `start_silent.bat` | Silent background startup |
+
+---
 
 ## 🏪 Datecs Compatibility
 
-This application is specifically designed for Datecs cash registers and fiscal printers, including:
+This application is designed for Datecs cash registers and fiscal printers:
 
 - **Datecs FP-2000** series
-- **Datecs FP-700** series  
+- **Datecs FP-700** series
 - **Datecs WP-500** series
 - **Datecs DP-25** and DP-35 series
 - Other Datecs devices with network connectivity
@@ -33,283 +114,74 @@ This application is specifically designed for Datecs cash registers and fiscal p
 **Default Configuration:**
 - Port: 4999 (standard Datecs communication port)
 - Connection Type: TCP Socket
-- Protocol: Compatible with Datecs network protocol
 
-## Features
+---
 
-### 🔄 Connection Monitoring
-- Continuous background monitoring every 5 seconds (configurable)
-- TCP socket connection test to specified IP:port
-- 3-second timeout handling for reliable testing
-- Connection history tracking
+## ⚙️ Configuration
 
-### 🎯 System Tray Integration
-- Minimizes to Windows 11 system tray (notification area)
-- Color-coded status indicators:
-  - 🟢 **Green**: Connected to cash register
-  - 🔴 **Red**: Disconnected from cash register  
-  - 🟡 **Yellow**: Checking connection status
-- Tooltip showing connection status and last check time
-- Right-click context menu with options
-
-### ⚙️ Settings Management
-- **IP Address**: Configure Datecs cash register IP (default: 192.168.1.155)
-- **Port**: Configure connection port (default: 4999, standard for Datecs devices)
-- **Check Interval**: Adjust monitoring frequency (default: 5 seconds)
-- **Auto-start**: Automatically start with Windows 11
-- Settings saved to JSON configuration file
-
-### 🚀 Windows Startup Integration
-- Auto-start with Windows 11 option
-- Registry-based or startup folder integration
-- Silent startup with no main window
-- Immediate connection monitoring on startup
-
-## Installation
-
-### Option 1: Install from Source
-
-1. **Clone or download** this repository
-2. **Install Python 3.8+** if not already installed
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. **Run the application**:
-   ```bash
-   python cash_register_monitor/main.py
-   ```
-
-### Option 2: Quick Install & Run (Windows)
-
-1. **Download and extract** the repository
-2. **Double-click** `install_and_run.bat`
-   - Automatically installs dependencies
-   - Starts the monitor in system tray
-   - No command window stays open
-
-### Option 3: Build Windows Executable
-
-1. **Double-click** `build_windows_exe.bat`
-   - Automatically installs PyInstaller
-   - Builds `DatecsCashRegisterMonitor.exe` 
-   - Creates a single-file executable
-
-2. **Run the executable**:
-   ```
-   dist/DatecsCashRegisterMonitor.exe
-   ```
-
-## 📁 Batch Files Reference
-
-| File | Purpose | Use Case |
-|------|---------|----------|
-| `install_and_run.bat` | One-click install & start | **Recommended for first-time users** |
-| `build_windows_exe.bat` | Create standalone executable | **Best for distribution** |
-| `run_datecs_monitor.bat` | Smart launcher | **Works with any version** |
-| `start_silent.bat` | Silent background startup | **For scheduled/automated runs** |
-| `start_monitor.bat` | Background with confirmation | **Manual startup with feedback** |
-
-## Usage
-
-### Starting the Application
-
-**From Source:**
-```bash
-python cash_register_monitor/main.py
-```
-
-**From Executable:**
-```
-CashRegisterMonitor.exe
-```
-
-### Command Line Options
-
-```bash
-python main.py [options]
-
-Options:
-  --setup-startup     Add application to Windows startup
-  --remove-startup    Remove application from Windows startup  
-  --test-connection   Test connection with current settings
-  --help             Show help message
-```
-
-### System Tray Usage
-
-1. **Right-click** the tray icon to access the context menu
-2. **Status**: View current connection information
-3. **Settings**: Configure IP, port, and monitoring options
-4. **Quit**: Exit the application
-
-### Settings Configuration
-
-Access settings by right-clicking the tray icon and selecting "Settings":
-
-- **Cash Register IP Address**: The IP address of your Datecs cash register
-- **Port**: The port number for connection testing
-- **Check Interval**: How often to test the connection (in seconds)
-- **Start with Windows**: Enable/disable auto-start functionality
-- **Minimize to system tray**: Application behavior setting
-
-## Technical Details
-
-### Architecture
-
-```
-cash_register_monitor/
-├── main.py                 # Application entry point
-├── connection_monitor.py   # TCP connection testing logic
-├── settings_manager.py     # JSON configuration management
-├── tray_application.py     # System tray interface & GUI
-├── startup_manager.py      # Windows startup integration
-├── create_icons.py        # Icon generation utility
-└── icons/                 # Generated status icons
-    ├── connected.ico      # Green (connected)
-    ├── disconnected.ico   # Red (disconnected)
-    ├── checking.ico       # Yellow (checking)
-    └── app_icon.png       # Application icon
-```
-
-### Dependencies
-
-- **pystray** (≥0.19.4): System tray integration
-- **Pillow** (≥9.0.0): Image processing for icons
-- **pywin32** (≥305): Windows-specific functionality (Windows only)
-
-### Connection Testing
-
-The application uses TCP socket connections to test connectivity:
-
-```python
-def test_connection(self) -> bool:
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        sock.settimeout(3)  # 3-second timeout
-        result = sock.connect_ex((self.ip, self.port))
-        return result == 0  # 0 means successful connection
-```
-
-### Threading Model
-
-- **Main Thread**: System tray interface and GUI
-- **Monitor Thread**: Background connection testing (daemon thread)
-- **Settings Thread**: Non-blocking settings window display
-
-## Configuration
-
-### Default Settings
+### macOS
+Configuration stored at: `~/.config/fprint_monitor/config.json`
 
 ```json
 {
-    "ip_address": "192.168.1.155",
-    "port": 4999,
-    "check_interval": 5,
-    "auto_start": true,
-    "minimize_to_tray": true
+  "printer_ip": "192.168.1.155",
+  "printer_port": 4999
 }
 ```
 
-### Configuration File Location
+### Windows
+Configuration stored in: `win/config.json`
 
-The configuration file `config.json` is stored in the same directory as the application.
-
-## Troubleshooting
-
-### Common Issues
-
-**Issue**: Application doesn't start
-- **Solution**: Check that all dependencies are installed: `pip install -r requirements.txt`
-
-**Issue**: Cannot connect to Datecs cash register
-- **Solution**: 
-  1. Verify the IP address and port in settings (Datecs devices typically use port 4999)
-  2. Use "Test Connection" button in settings
-  3. Check network connectivity
-  4. Ensure Datecs cash register is powered on and network-enabled
-  5. Check if the fiscal printer is in the correct network mode
-
-**Issue**: Tray icon not visible
-- **Solution**: 
-  1. Check Windows 11 notification area settings
-  2. Enable "Show all icons in the notification area"
-  3. Restart the application
-
-**Issue**: Auto-start not working
-- **Solution**:
-  1. Run as administrator when enabling auto-start
-  2. Check Windows startup settings
-  3. Use command line: `python main.py --setup-startup`
-
-### Debug Mode
-
-Run with verbose output to troubleshoot issues:
-```bash
-python cash_register_monitor/main.py --test-connection
+```json
+{
+  "ip_address": "192.168.1.155",
+  "port": 4999,
+  "check_interval": 5,
+  "auto_start": true,
+  "minimize_to_tray": true
+}
 ```
 
-## Development
+---
 
-### Project Structure
+## 🔧 Troubleshooting
 
-The application follows a modular architecture:
+### Cannot connect to cash register
+1. Verify IP address and port in settings
+2. Ensure cash register is powered on and network-enabled
+3. Check network connectivity: `ping <IP_ADDRESS>`
+4. Test port: `nc -zv <IP_ADDRESS> <PORT>`
 
-- **ConnectionMonitor**: Handles TCP connectivity testing
-- **SettingsManager**: Manages JSON configuration files  
-- **TrayApplication**: System tray interface and GUI windows
-- **StartupManager**: Windows startup integration
+### macOS: FPrint not starting
+1. Ensure Wine is installed: `brew install wine-stable`
+2. Check FPrint.exe exists in parent directory
+3. Run from terminal to see debug output
 
-### Building from Source
+### Windows: Tray icon not visible
+1. Check Windows notification area settings
+2. Enable "Show all icons in the notification area"
+3. Restart the application
 
-1. **Install development dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   pip install pyinstaller pytest black flake8
-   ```
-
-2. **Run tests** (if available):
-   ```bash
-   pytest
-   ```
-
-3. **Format code**:
-   ```bash
-   black .
-   ```
-
-4. **Build executable**:
-   ```bash
-   # For Windows (recommended)
-   build_windows_exe.bat
-   
-   # Or manually with Python
-   python build_executable.py
-   ```
+---
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
-
-## Support
-
-For support and bug reports, please:
-- **Issues**: Create an issue in the project repository
-- **Discussions**: Use GitHub Discussions for questions and community help
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Version History
 
+### v1.2.0 - Cross-Platform Support
+- Added macOS menu bar application
+- Restructured project with `mac/` and `win/` folders
+- FPrint.exe support via Wine on macOS
+- Improved restart functionality
+
 ### v1.1.0 - Easy Windows Installation
-- **One-Click Installation**: `install_and_run.bat` for automatic setup
-- **Executable Builder**: `build_windows_exe.bat` creates standalone .exe
-- **Smart Launcher**: `run_datecs_monitor.bat` works with any version
-- **Background Execution**: No command windows stay open
-- **Enhanced Documentation**: Clear installation and usage instructions
-- **Professional Packaging**: Ready for end-user deployment
+- One-Click Installation with `install_and_run.bat`
+- Executable Builder for standalone .exe
+- Background execution without command windows
 
 ### v1.0.0 - Initial Release
 - TCP connection monitoring for Datecs devices
-- System tray integration with colored status indicators
-- Windows startup support with registry integration
-- Settings management GUI with connection testing
-- JSON configuration file storage
-- Icon-based visual feedback system
+- Windows system tray integration
+- Settings management GUI

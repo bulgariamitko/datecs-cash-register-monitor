@@ -143,51 +143,55 @@ class UnifiedMonitor(rumps.App):
             except ValueError:
                 rumps.alert("Invalid port number. Port must be a number (e.g., 9100)")
 
+    def _launch_fprint(self):
+        """Internal method to launch FPrint.exe via wine"""
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        fprint_dir = os.path.dirname(script_dir)
+        fprint_exe = os.path.join(fprint_dir, "FPrint.exe")
+
+        # Check if FPrint.exe exists
+        if not os.path.exists(fprint_exe):
+            rumps.alert(f"FPrint.exe not found at {fprint_exe}")
+            return False
+
+        # Use wine from homebrew directly
+        wine_path = "/opt/homebrew/bin/wine"
+        if not os.path.exists(wine_path):
+            wine_path = "/usr/local/bin/wine"
+        if not os.path.exists(wine_path):
+            wine_path = shutil.which("wine")
+
+        if not wine_path or not os.path.exists(wine_path):
+            rumps.alert("Wine not found. Please install wine via Homebrew: brew install wine-stable")
+            return False
+
+        print(f"[DEBUG] Launching FPrint from: {fprint_dir}")
+        print(f"[DEBUG] Wine path: {wine_path}")
+
+        # Use nohup + bash -l (login shell) to get full environment
+        cmd = f'nohup /bin/bash -l -c \'cd "{fprint_dir}" && "{wine_path}" FPrint.exe\' > /dev/null 2>&1 &'
+        print(f"[DEBUG] Running: {cmd}")
+
+        subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return True
+
     def start_fprint(self, _):
         """Start FPrint.exe if not running"""
         if not self.check_fprint_running():
             try:
-                # Get FPrintWIN directory (parent of mac-app-monitor)
-                script_dir = os.path.dirname(os.path.abspath(__file__))
-                fprint_dir = os.path.dirname(script_dir)
-                fprint_exe = os.path.join(fprint_dir, "FPrint.exe")
+                if self._launch_fprint():
+                    # Wait for Wine to initialize
+                    time.sleep(4)
+                    self.check_status(None)
 
-                # Check if FPrint.exe exists
-                if not os.path.exists(fprint_exe):
-                    rumps.alert(f"FPrint.exe not found at {fprint_exe}")
-                    return
-
-                # Use wine from homebrew directly
-                wine_path = "/opt/homebrew/bin/wine"
-                if not os.path.exists(wine_path):
-                    wine_path = "/usr/local/bin/wine"
-                if not os.path.exists(wine_path):
-                    wine_path = shutil.which("wine")
-
-                if not wine_path or not os.path.exists(wine_path):
-                    rumps.alert("Wine not found. Please install wine via Homebrew: brew install wine-stable")
-                    return
-
-                print(f"[DEBUG] Starting FPrint: {wine_path} {fprint_exe}")
-                print(f"[DEBUG] Working directory: {fprint_dir}")
-
-                # Run exactly like terminal: cd to dir && wine FPrint.exe &
-                cmd = f'cd "{fprint_dir}" && "{wine_path}" FPrint.exe > /dev/null 2>&1 &'
-                print(f"[DEBUG] Running command: {cmd}")
-                os.system(cmd)
-
-                # Wait for Wine to initialize
-                time.sleep(4)
-                self.check_status(None)
-
-                if self.check_fprint_running():
-                    rumps.notification(
-                        title="FPrint Started",
-                        subtitle="",
-                        message="FPrint.exe has been started successfully"
-                    )
-                else:
-                    rumps.alert("FPrint.exe may have failed to start. Please try again.")
+                    if self.check_fprint_running():
+                        rumps.notification(
+                            title="FPrint Started",
+                            subtitle="",
+                            message="FPrint.exe has been started successfully"
+                        )
+                    else:
+                        rumps.alert("FPrint.exe may have failed to start. Please try again.")
             except Exception as e:
                 rumps.alert(f"Failed to start FPrint: {str(e)}")
         else:
@@ -208,37 +212,20 @@ class UnifiedMonitor(rumps.App):
 
         print("[DEBUG] All wine processes killed, starting FPrint...")
 
-        # Start fresh using bash - exactly like terminal command
         try:
-            script_dir = os.path.dirname(os.path.abspath(__file__))
-            fprint_dir = os.path.dirname(script_dir)
-            wine_path = "/opt/homebrew/bin/wine"
+            if self._launch_fprint():
+                # Wait for Wine to initialize
+                time.sleep(4)
+                self.check_status(None)
 
-            if not os.path.exists(wine_path):
-                wine_path = "/usr/local/bin/wine"
-            if not os.path.exists(wine_path):
-                wine_path = shutil.which("wine")
-
-            print(f"[DEBUG] Using wine: {wine_path}")
-            print(f"[DEBUG] FPrint dir: {fprint_dir}")
-
-            # Run exactly like terminal: cd to dir && wine FPrint.exe &
-            cmd = f'cd "{fprint_dir}" && "{wine_path}" FPrint.exe > /dev/null 2>&1 &'
-            print(f"[DEBUG] Running command: {cmd}")
-            os.system(cmd)
-
-            # Wait for Wine to initialize
-            time.sleep(4)
-            self.check_status(None)
-
-            if self.check_fprint_running():
-                rumps.notification(
-                    title="FPrint Restarted",
-                    subtitle="",
-                    message="FPrint.exe has been restarted successfully"
-                )
-            else:
-                rumps.alert("FPrint.exe may have failed to restart. Please try again.")
+                if self.check_fprint_running():
+                    rumps.notification(
+                        title="FPrint Restarted",
+                        subtitle="",
+                        message="FPrint.exe has been restarted successfully"
+                    )
+                else:
+                    rumps.alert("FPrint.exe may have failed to restart. Please try again.")
         except Exception as e:
             rumps.alert(f"Failed to restart FPrint: {str(e)}")
 

@@ -171,17 +171,13 @@ class UnifiedMonitor(rumps.App):
                 print(f"[DEBUG] Starting FPrint: {wine_path} {fprint_exe}")
                 print(f"[DEBUG] Working directory: {fprint_dir}")
 
-                # Start FPrint.exe using wine - exactly like terminal command
-                subprocess.Popen(
-                    [wine_path, "FPrint.exe"],
-                    cwd=fprint_dir,
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    start_new_session=True
-                )
+                # Run exactly like terminal: cd to dir && wine FPrint.exe &
+                cmd = f'cd "{fprint_dir}" && "{wine_path}" FPrint.exe > /dev/null 2>&1 &'
+                print(f"[DEBUG] Running command: {cmd}")
+                os.system(cmd)
 
                 # Wait for Wine to initialize
-                time.sleep(3)
+                time.sleep(4)
                 self.check_status(None)
 
                 if self.check_fprint_running():
@@ -212,8 +208,7 @@ class UnifiedMonitor(rumps.App):
 
         print("[DEBUG] All wine processes killed, starting FPrint...")
 
-        # Start fresh
-        # Force start even if check says it's running (it shouldn't be after kill)
+        # Start fresh using bash - exactly like terminal command
         try:
             script_dir = os.path.dirname(os.path.abspath(__file__))
             fprint_dir = os.path.dirname(script_dir)
@@ -227,16 +222,13 @@ class UnifiedMonitor(rumps.App):
             print(f"[DEBUG] Using wine: {wine_path}")
             print(f"[DEBUG] FPrint dir: {fprint_dir}")
 
-            subprocess.Popen(
-                [wine_path, "FPrint.exe"],
-                cwd=fprint_dir,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                start_new_session=True
-            )
+            # Run exactly like terminal: cd to dir && wine FPrint.exe &
+            cmd = f'cd "{fprint_dir}" && "{wine_path}" FPrint.exe > /dev/null 2>&1 &'
+            print(f"[DEBUG] Running command: {cmd}")
+            os.system(cmd)
 
             # Wait for Wine to initialize
-            time.sleep(3)
+            time.sleep(4)
             self.check_status(None)
 
             if self.check_fprint_running():

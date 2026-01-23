@@ -143,16 +143,55 @@ class UnifiedMonitor(rumps.App):
             except ValueError:
                 rumps.alert("Invalid port number. Port must be a number (e.g., 9100)")
 
-    def _launch_fprint(self):
-        """Internal method to launch FPrint.exe via wine"""
+    def _find_fprint_dir(self):
+        """Find the FPrintWIN directory containing FPrint.exe"""
+        print("[DEBUG] Looking for FPrint.exe...")
+
+        # Check if we have a saved path in config
+        if "fprint_dir" in self.config:
+            saved_path = self.config["fprint_dir"]
+            print(f"[DEBUG] Checking saved path: {saved_path}")
+            if os.path.exists(os.path.join(saved_path, "FPrint.exe")):
+                print(f"[DEBUG] Found FPrint.exe at saved path")
+                return saved_path
+
+        # Try relative path (when running from source)
         script_dir = os.path.dirname(os.path.abspath(__file__))
         fprint_dir = os.path.dirname(script_dir)
-        fprint_exe = os.path.join(fprint_dir, "FPrint.exe")
+        print(f"[DEBUG] Script dir: {script_dir}")
+        print(f"[DEBUG] Trying relative path: {fprint_dir}")
+        if os.path.exists(os.path.join(fprint_dir, "FPrint.exe")):
+            print(f"[DEBUG] Found FPrint.exe at relative path")
+            return fprint_dir
 
-        # Check if FPrint.exe exists
-        if not os.path.exists(fprint_exe):
-            rumps.alert(f"FPrint.exe not found at {fprint_exe}")
+        # Try common locations
+        common_paths = [
+            os.path.expanduser("~/Downloads/FPrintWIN"),
+            os.path.expanduser("~/FPrintWIN"),
+            "/Applications/FPrintWIN",
+            os.path.expanduser("~/Desktop/FPrintWIN"),
+        ]
+        for path in common_paths:
+            print(f"[DEBUG] Trying: {path}")
+            if os.path.exists(os.path.join(path, "FPrint.exe")):
+                print(f"[DEBUG] Found FPrint.exe at: {path}")
+                # Save found path to config
+                self.config["fprint_dir"] = path
+                self.save_config()
+                return path
+
+        print("[DEBUG] FPrint.exe not found in any location")
+        return None
+
+    def _launch_fprint(self):
+        """Internal method to launch FPrint.exe via wine"""
+        fprint_dir = self._find_fprint_dir()
+
+        if not fprint_dir:
+            rumps.alert("FPrint.exe not found. Please ensure FPrintWIN folder is in Downloads, Desktop, or Home folder.")
             return False
+
+        fprint_exe = os.path.join(fprint_dir, "FPrint.exe")
 
         # Use wine from homebrew directly
         wine_path = "/opt/homebrew/bin/wine"
